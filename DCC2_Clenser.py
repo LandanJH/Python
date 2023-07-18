@@ -10,7 +10,7 @@ def list_to_file(list, name):
 # start of the main program
 hash_list = []          # list of uncleaned hashes
 cleaned_hashes = []     # list of cleaned hashes
-tmp_hashes = []
+tmp_hashes = []         # temporary placeholder
 
 # taking in the file name
 print('Please enter the file name:')
