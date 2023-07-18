@@ -1,0 +1,9 @@
+Cleanser Help
+
+usage: DCC2_Clenser.py [-h] [-f FILE]
+
+Hash cleaner for the Domain Caches Credentials 2 hash type
+
+options:
+  -h, --help            show this help message and exit
+  -f FILE, --FILE FILE  Path of the file with the uncleaned DCC2 hashes
