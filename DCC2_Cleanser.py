@@ -3,13 +3,14 @@ import os
 import argparse
 
 def list_to_file(list, name):
+# prints a list to a file line by line
     file = open( name+'.cleaned', 'w')
     for items in list:
         file.write(items+"\n")
     file.close()
 
 def Clenser(input):
-
+# cleaner function
     hash_list = []          # list of uncleaned hashes
     cleaned_hashes = []     # list of cleaned hashes
     tmp_hashes = []         # temporary placeholder
@@ -52,5 +53,4 @@ if (args.f == None):
 else:
     # taking in the file name
     print('Please enter the file name:')
-    #input = input()
     Clenser(args.f)
