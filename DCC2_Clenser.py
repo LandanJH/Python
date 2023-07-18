@@ -1,15 +1,5 @@
 # this script takes in a file with dcc2 hashes and clenses the hash for ease of use
-#import argparse 
-#import colorama
 import os
-
-###################################################################################
-#                                                                                 #
-#     could use arg parse to add a file argument as well as a way to specify      #
-#                   which kind of hash that is in the file                        #
-#                                                                                 #
-###################################################################################
-
 
 def list_to_file(list, name):
     file = open( name+'.cleaned', 'w')
@@ -44,14 +34,11 @@ if (os.path.exists(input) == True):
         ]
     # go through list and remove the duplicates
     cleaned_hashes = list(dict.fromkeys(cleaned_hashes))
-    print(cleaned_hashes)
     # closing the file and printing out the filteres hashes
     file.close()
     # send the list to the 'list_to_file' function
     list_to_file(cleaned_hashes, input)
-
-    for hash in cleaned_hashes:
-        print(hash)
 # just in case you put in the wrong file name
+    print('Cleaning finished output will be in the file named', input+'.cleaned')
 else:  
     print('file does NOT exist')
