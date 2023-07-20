@@ -89,12 +89,12 @@ def Directory_Parser(pattern, directory, mode):
             #print (file_path)
             hashes = Secrets_Parser(file_path, pattern)
             hashes2 = hashes + hashes2
-            print(hashes2)
+            #print(hashes2)
         if (mode == 'DCC2'):
             List_Cleanser(hashes2, 'secretdumps.DCC2')
         else:
             hashes2 = Rem_Duplicates(hashes2)
-            list_to_file(hashes, 'sectretsdump.NTLM')
+            list_to_file(hashes2, 'secretdumps.NTLM')
 
     
 if __name__ == "__main__":
