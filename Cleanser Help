@@ -1,9 +1,11 @@
 Cleanser Help
-
-usage: DCC2_Clenser.py [-h] [-f FILE]
+usage: Hash_Clenser.py [-h] [-f FILE] [-s SECRETS] [-m MODE]
 
 Hash cleaner for the Domain Caches Credentials 2 hash type
 
 options:
   -h, --help            show this help message and exit
-  -f FILE, --FILE FILE  Path of the file with the uncleaned DCC2 hashes
+  -f FILE, --FILE FILE  File path of the file with the uncleaned DCC2 hashes
+  -s SECRETS, --SECRETS SECRETS
+                        Path of the file with the secret dump hashes
+  -m MODE, --MODE MODE  Type of hash to be found from secretsdump files DCC2 or NTLM
