@@ -51,13 +51,6 @@ def Secrets_Parser(input, pattern):
             content = file.readlines()
         # Pull the hashes
         hashes = Pattern_Parser(content, pattern) 
-
-    #might need the below code incase I break Something
-#        for x in range (len(content)):
-#            hash = re.finditer(pattern, content[x])
-#            for match in hash:
-#                hashes.append(match.group())
-
     return hashes
 
 def List_Cleanser (hash_list, input):       # might need to make sure that this function can parse NTLM
@@ -72,6 +65,7 @@ def List_Cleanser (hash_list, input):       # might need to make sure that this 
     list_to_file(cleaned_hashes, input)
 
 def Directory_Parser(pattern, directory, mode):
+# this function will go through a directory and parse all the information from all the files
     hashes2 = []
     fileslist =  os.listdir(directory)
     for file in fileslist:
@@ -87,26 +81,33 @@ def Directory_Parser(pattern, directory, mode):
 
 def Match(hashes, cracked, pattern_HASH, pattern_CRACKED):
 # This function will take the file of cracked passwords from hashcat and the NTLM files and match the username to the password
-    hashes_from_file = []
-    cracked_from_file = []
+    #hashes_from_file = []
+    #cracked_from_file = []
+#    nonCracked_hash = [] # 2-D array that will hold the username and hash information to be matched [hash], [username]
+#    nonCracked_username = [] 
+#    isCracked_hash = [] # 2-D array that will hold the password and hash information to be matched [hash], [Password]
+#    isCracked_password = []
     if (os.path.isfile(hashes) == True and os.path.isfile(cracked) == True):
         # grabbing the hashes and cracked passwords from the input files
         print('Grabbing hashed to be matched')
         with open(hashes) as file:
             hashes_from_file = file.readlines()
             hashes_from_file = Remove_null(hashes_from_file)
-            hashes_from_file = Pattern_Parser(hashes_from_file, pattern_HASH)
-            #print(hashes_from_file)
+            nonCracked_hash, nonCracked_username = Match_Parser(hashes_from_file, pattern_HASH)
             file.close()
         print('Grabbing cracked passwords')
         with open(cracked) as file:
             cracked_from_file = file.readlines()
             cracked_from_file = Remove_null(cracked_from_file)
-            cracked_from_file = Pattern_Parser(cracked_from_file, pattern_CRACKED)
-            #print(cracked_from_file)
+            isCracked_hash, isCracked_password = Match_Parser(cracked_from_file, pattern_CRACKED)
             file.close()
     else:
         print('Cracked hash or Hash file does not exist, please check the filename')
+    Matching(isCracked_hash, isCracked_password, nonCracked_hash, nonCracked_username)
+#    print(isCracked_hash)
+#    print(isCracked_password)
+#    print(nonCracked_hash)
+#    print(nonCracked_username)
 
 def Remove_null(list): # done
 # This function removes the null byte at the end of an item in a list
@@ -116,48 +117,34 @@ def Remove_null(list): # done
     return list
 
 def Pattern_Parser(list, pattern):
+# This function uses regular expression to fing NTLM or DCC2 hashes and returns the hashes in a list
     hashes = []
     for x in range (len(list)):
         tmp = list[x]
-        if(pattern == '(\$DCC2\$)(.*)' or pattern == '(.*?):(.*?):(.*?):(.*?):::'): #DCC2 or NTLM
-            regex = re.compile(pattern)
-            hash = regex.search(tmp)
-            if(hash !=  None):
-                hashes.append(hash[0])
-        else:
-            # I should probably make this part it's own function
-            nonCracked_hash = [] # 2-D array that will hold the username and hash information to be matched [hash], [username]
-            nonCracked_username = [] 
-            isCracked_hash = [] # 2-D array that will hold the password and hash information to be matched [hash], [Password]
-            isCracked_password = []
-            tmp = list[x]
-            regex = re.compile(pattern)
-            hash = regex.search(tmp)
-            if (pattern == '(.*?):(.*)(.*):(.*):::'): # non cracked hash 
-                print(hash[4])
-                print(hash[1])
-                nonCracked_hash.append(hash[4]) # should relate to the hash
-                nonCracked_username.append(hash[1]) # should relate to the username
-                #print(nonCracked_hash)
-                #rint(nonCracked_username)
-            elif (pattern == '(.*?):(.*)'): # cracked hash
-                print(hash[1])
-                print(hash[2])
-                isCracked_hash.append(hash[1]) # should relate to the hash
-                isCracked_password.append(hash[2]) # should relate to the password
-                #print(isCracked_hash)
-                #print(isCracked_password)
-            else:
-                print('something went wrong')
-    print('here')
-    print(isCracked_hash)
-    print(isCracked_password)
-    print(nonCracked_hash)
-    print(nonCracked_username)
-#        for match in hash:
-            #hashes.append(match.group())
-#            list.append(match.group())
+        #if(pattern == '(\$DCC2\$)(.*)' or pattern == '(.*?):(.*?):(.*?):(.*?):::'): #DCC2 or NTLM
+        regex = re.compile(pattern)
+        hash = regex.search(tmp)
+        if(hash !=  None):
+            hashes.append(hash[0])
     return hashes
+
+def Match_Parser (list, pattern):
+# Function to grab the hash username and password information and return lists containing that information
+    hashList = []
+    otherList = []
+    for x in range (len(list)):
+        tmp = list[x]
+        regex = re.compile(pattern)
+        hash = regex.search(tmp)
+        if (pattern == '(.*?):(.*)(.*):(.*):::'): # non cracked hash 
+            hashList.append(hash[4]) # should relate to the hash
+            otherList.append(hash[1]) # should relate to the username
+        elif (pattern == '(.*?):(.*)'): # cracked hash
+            hashList.append(hash[1]) # should relate to the hash
+            otherList.append(hash[2]) # should relate to the password
+        else:
+            print('something went wrong')
+    return hashList, otherList
         
 # For the regex for the matching function
 #   Hashes
@@ -167,6 +154,17 @@ def Pattern_Parser(list, pattern):
 #   cracked
 #       group 1: hash
 #       group 2: password
+def Matching (isCracked_hash, isCracked_password, nonCracked_hash, nonCracked_username):
+    for y in range (len(nonCracked_hash)):
+        for x in range (len(isCracked_hash)):
+            if (isCracked_hash[x] == nonCracked_hash[y]):
+                if(isCracked_password[x] == ''):
+                    isCracked_password[x] = '(NO_PASSWORD_DATA)'
+                crackedAccount = User(nonCracked_username[y], nonCracked_hash[y], isCracked_password[x])
+                userList.append(crackedAccount)
+    #print(userList)
+    for z in range (len(userList)):
+        print(userList[z].username, userList[z].hash, userList[z].password)
 
     
 if __name__ == "__main__":
@@ -217,9 +215,9 @@ if __name__ == "__main__":
         File_Clenser(args.FILE)
 
 
-    newUser = User("test", "Password1!", "somerandomhash")
-    userList.append(newUser)
-    print(userList[0].username, userList[0].hash, userList[0].password)
+    #newUser = User("test", "Password1!", "somerandomhash")
+    #userList.append(newUser)
+    #print(userList[0].username, userList[0].hash, userList[0].password)
 
     #currently need to fix the bug where it prints multiple lines when parsing through the files
     #   I could create another function that will tell the user that the program is finished
