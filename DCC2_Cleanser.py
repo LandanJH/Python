@@ -5,9 +5,9 @@ from typing import List
 
 class User:
     def __init__(self, username, password, hash):
-        self.username = []
-        self.password = []
-        self.hash = []
+        self.username = username
+        self.password = password
+        self.hash = hash
 
 
 def list_to_file(list, name): #done
@@ -116,19 +116,6 @@ def Remove_null(list): # done
     return list
 
 def Pattern_Parser(list, pattern):
-# this function SHOULD go through a list and parse based on the regex pattern (MIGHT NOT WORK PROPERLT ATM)
-############################################################
-#    class User:
-#        def __init__(self, username, password, hash):
-#            self.username = []
-#            self.password = []                                  #this section is in the wrong function but will fix later
-#            self.hash = []
-#    Users = [
-#        User("mary", "Password1!", "somerandomhash")
-#    ]
-    new_user = User("mary", "Password1!", "somerandomhash")
-############################################################
-
     hashes = []
     for x in range (len(list)):
         tmp = list[x]
@@ -138,24 +125,39 @@ def Pattern_Parser(list, pattern):
             if(hash !=  None):
                 hashes.append(hash[0])
         else:
-            Matches = [] # 2-D array that will hold the username, hash, and password information that will be put into a file [username], [hash], [password]
+            # I should probably make this part it's own function
+            nonCracked_hash = [] # 2-D array that will hold the username and hash information to be matched [hash], [username]
+            nonCracked_username = [] 
+            isCracked_hash = [] # 2-D array that will hold the password and hash information to be matched [hash], [Password]
+            isCracked_password = []
             tmp = list[x]
             regex = re.compile(pattern)
             hash = regex.search(tmp)
-            #print(hash[4])
-            
+            if (pattern == '(.*?):(.*)(.*):(.*):::'): # non cracked hash 
+                print(hash[4])
+                print(hash[1])
+                nonCracked_hash.append(hash[4]) # should relate to the hash
+                nonCracked_username.append(hash[1]) # should relate to the username
+                #print(nonCracked_hash)
+                #rint(nonCracked_username)
+            elif (pattern == '(.*?):(.*)'): # cracked hash
+                print(hash[1])
+                print(hash[2])
+                isCracked_hash.append(hash[1]) # should relate to the hash
+                isCracked_password.append(hash[2]) # should relate to the password
+                #print(isCracked_hash)
+                #print(isCracked_password)
+            else:
+                print('something went wrong')
+    print('here')
+    print(isCracked_hash)
+    print(isCracked_password)
+    print(nonCracked_hash)
+    print(nonCracked_username)
 #        for match in hash:
             #hashes.append(match.group())
 #            list.append(match.group())
-    print(new_user.username)
-    print(new_user.password)
-    print(new_user.hash)
     return hashes
-#    for user in Users:
-#        print(user.username)
-#        print(user.password)
-#        print(user.hash)
-#    return hashes
         
 # For the regex for the matching function
 #   Hashes
@@ -170,6 +172,7 @@ def Pattern_Parser(list, pattern):
 if __name__ == "__main__":
     # Userlist for the matching part of the program
     userList: List[User] = []
+
     # Argument parcer stuff
     parser = argparse.ArgumentParser(description='Hash cleaner for the Domain Caches Credentials 2 hash type')
     parser.parse_args
@@ -214,11 +217,9 @@ if __name__ == "__main__":
         File_Clenser(args.FILE)
 
 
-    newUser = User("mary", "Password1!", "somerandomhash")
+    newUser = User("test", "Password1!", "somerandomhash")
     userList.append(newUser)
-    print(userList[0].hash)
-    print(userList[0].username)
-    print(userList[0].password)
+    print(userList[0].username, userList[0].hash, userList[0].password)
 
     #currently need to fix the bug where it prints multiple lines when parsing through the files
     #   I could create another function that will tell the user that the program is finished
