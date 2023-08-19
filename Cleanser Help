@@ -7,9 +7,13 @@ options:
   -h, --help            show this help message and exit
   -d DIRECTORY, --DIRECTORY DIRECTORY
                         Directory path of the files with the uncleaned DCC2 hashes
+                        Usage: Cleanser.py -d <directory with the secrets files> -m <DCC2 or NTLM>
   -f FILE, --FILE FILE  File path of the file with the uncleaned DCC2 hashes
+                        Usage: Cleanser.py -f <DCC2 hashes>
   -m MODE, --MODE MODE  Type of hash to be found from secretsdump files DCC2 or NTLM
   -M MATCH, --MATCH MATCH
                         Match the cracked password with the user of that password
+                        Usage: Cleanser.py -M <cracked list> -f <NTLM list>
   -s SECRETS, --SECRETS SECRETS
                         Path of the file with the secret dump hashes
+                        Usage: Cleanser.py -s <secrets list> -m <NTLM or DCC2>
