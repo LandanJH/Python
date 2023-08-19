@@ -9,7 +9,6 @@ class User:
         self.password = password
         self.hash = hash
 
-
 def list_to_file(list, name): #done
 #Function to take a list and puth the list in a file line-by-line
     file = open( name+'.cleaned', 'w')
@@ -81,12 +80,6 @@ def Directory_Parser(pattern, directory, mode):
 
 def Match(hashes, cracked, pattern_HASH, pattern_CRACKED):
 # This function will take the file of cracked passwords from hashcat and the NTLM files and match the username to the password
-    #hashes_from_file = []
-    #cracked_from_file = []
-#    nonCracked_hash = [] # 2-D array that will hold the username and hash information to be matched [hash], [username]
-#    nonCracked_username = [] 
-#    isCracked_hash = [] # 2-D array that will hold the password and hash information to be matched [hash], [Password]
-#    isCracked_password = []
     if (os.path.isfile(hashes) == True and os.path.isfile(cracked) == True):
         # grabbing the hashes and cracked passwords from the input files
         print('Grabbing hashed to be matched')
@@ -104,10 +97,6 @@ def Match(hashes, cracked, pattern_HASH, pattern_CRACKED):
     else:
         print('Cracked hash or Hash file does not exist, please check the filename')
     Matching(isCracked_hash, isCracked_password, nonCracked_hash, nonCracked_username)
-#    print(isCracked_hash)
-#    print(isCracked_password)
-#    print(nonCracked_hash)
-#    print(nonCracked_username)
 
 def Remove_null(list): # done
 # This function removes the null byte at the end of an item in a list
@@ -154,6 +143,7 @@ def Match_Parser (list, pattern):
 #   cracked
 #       group 1: hash
 #       group 2: password
+
 def Matching (isCracked_hash, isCracked_password, nonCracked_hash, nonCracked_username):
     for y in range (len(nonCracked_hash)):
         for x in range (len(isCracked_hash)):
@@ -162,10 +152,16 @@ def Matching (isCracked_hash, isCracked_password, nonCracked_hash, nonCracked_us
                     isCracked_password[x] = '(NO_PASSWORD_DATA)'
                 crackedAccount = User(nonCracked_username[y], nonCracked_hash[y], isCracked_password[x])
                 userList.append(crackedAccount)
-    #print(userList)
-    for z in range (len(userList)):
-        print(userList[z].username, userList[z].hash, userList[z].password)
+    userList_to_file()
 
+def userList_to_file():
+    file = open( 'Credentials', 'w')
+    for x in range (len(userList)):
+        file.write(userList[x].username+"   ")
+        file.write(userList[x].hash+"   ")
+        file.write(userList[x].password + "\n")
+    file.close()
+    print('Cleaning finished output will be in the file named Credentials')
     
 if __name__ == "__main__":
     # Userlist for the matching part of the program
@@ -213,13 +209,3 @@ if __name__ == "__main__":
             Match(args.FILE, args.MATCH, pattern_HASH, pattern_CRACKED)
     else:
         File_Clenser(args.FILE)
-
-
-    #newUser = User("test", "Password1!", "somerandomhash")
-    #userList.append(newUser)
-    #print(userList[0].username, userList[0].hash, userList[0].password)
-
-    #currently need to fix the bug where it prints multiple lines when parsing through the files
-    #   I could create another function that will tell the user that the program is finished
-    #could also add an option to match all of the cracked hashes to the users that they belong to\
-    #   most of the code is working just need to work on the matching functions
