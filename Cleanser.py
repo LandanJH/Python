@@ -228,6 +228,6 @@ if __name__ == "__main__":
         else:
             Match(args.FILE, args.MATCH, pattern_HASH, pattern_CRACKED)
     elif(args.RELAY != None):
-        relay_Parser(args.relay)
+        relay_Parser(args.RELAY)
     else:
         File_Clenser(args.FILE)
