@@ -164,6 +164,23 @@ def userList_to_file():
         file.write(userList[x].password + "\n")
     file.close()
     print('Cleaning finished output will be in the file named Credentials')
+
+def relay_Parser(relayFile):
+    # Checking to make sure the file exists
+    if (os.path.exists(relayFile) == True):
+        try:
+            data = {}
+            with open(relayFile) as file:
+                for line in file.readlines():
+                    split = line.split(":")
+                    if split[0] not in data.keys():
+                        data[split[0]] = line
+            for k in data.keys():
+                print(data[k].strip(), end='\n')
+        except Exception as e:
+            print(str(e))
+    
+
     
 if __name__ == "__main__":
     # Userlist for the matching part of the program
@@ -177,6 +194,7 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--MODE', type=str, help='Type of hash to be found from secretsdump files DCC2 or NTLM', default=None)
     parser.add_argument('-M', '--MATCH', type=str, help='Match the cracked password with the user of that password', default=None)
     parser.add_argument('-s', '--SECRETS', type=str, help='Path of the file with the secret dump hashes', default=None)
+    parser.add_argument('-r', '--RELAY', type=str, help='Path of the relay_HashType file that responder dumps hashes to', default=None)
     args = parser.parse_args()
 
     # Regex patterns
@@ -185,7 +203,7 @@ if __name__ == "__main__":
     pattern_HASH = r"(.*?):(.*)(.*):(.*):::"        # need to capture groups 1 for the username and 4 for the hash
     pattern_CRACKED= r"(.*?):(.*)"                  # for use with the cracked password file group 1 is the hash and group 2 is the username
 
-    if (args.FILE == None and args.SECRETS == None and args.DIRECTORY == None):
+    if (args.FILE == None and args.SECRETS == None and args.DIRECTORY == None and args.RELAY == None): 
         print('Please be sure to include the filename: -f [FILENAME]')
     elif(args.SECRETS != None):
         if (args.MODE == 'DCC2'):
@@ -209,5 +227,7 @@ if __name__ == "__main__":
             print('Please include the file with the NTLM hashes and the file with the cracked hashes')
         else:
             Match(args.FILE, args.MATCH, pattern_HASH, pattern_CRACKED)
+    elif(args.RELAY != None):
+        relay_Parser(args.relay)
     else:
         File_Clenser(args.FILE)
